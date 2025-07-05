@@ -61,7 +61,7 @@ cos_factor = 0.003  # 余弦相似度系数
 使用 `RMUL_axis.py` 确定盲点坐标，战术部署，
 
 <div align="center">
-  <img src="images/RMUC_axis.png" width="500em" alt="RMUC">
+  <img src="images/RMUC_axis.png" width="1000em" alt="RMUC">
 </div>
 
 然后把坐标填写到 `main.py` 144行的 `guess_table` 字典里，
