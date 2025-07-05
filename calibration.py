@@ -133,6 +133,11 @@ def video_capture_get():
 
 
 color = [(255, 255, 255), (0, 255, 0), (0, 0, 255)]
+big = 66
+L_width = 27 * big  # 1350
+L_height = 20 * big  # 1000
+R_width = 11 * big  # 550
+R_height = 18 * big  # 900
 
 
 class MyUI(QWidget):
@@ -145,7 +150,7 @@ class MyUI(QWidget):
         # 左上角部分
         self.state = state
         self.left_top_label = QLabel(self)
-        self.left_top_label.setFixedSize(1350, 1000)
+        self.left_top_label.setFixedSize(L_width, L_height)
         self.left_top_label.setStyleSheet("border: 2px solid black;")
         self.left_top_label.mousePressEvent = self.left_top_clicked
         self.image_points = [[(0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0)],
@@ -156,7 +161,7 @@ class MyUI(QWidget):
         self.map_count = 0
         # 右上角部分
         self.right_top_label = QLabel(self)
-        self.right_top_label.setFixedSize(550, 900)
+        self.right_top_label.setFixedSize(R_width, R_height)
         self.right_top_label.setStyleSheet("border: 2px solid black;")
         self.right_top_label.mousePressEvent = self.right_top_clicked
 
@@ -182,27 +187,31 @@ class MyUI(QWidget):
         self.button4.clicked.connect(self.button4_clicked)
         self.height = 0
         self.T = []
-        if self.state == 'R':
+        if camera_mode == 'hik_test':
+            self.save_path = 'arrays_test.npy'
+            right_image_path = "001.png"  # 替换为右边图片的路径
+        elif self.state == 'R':
             self.save_path = 'arrays_test_red.npy'
-            right_image_path = "images/map_red.jpg"  # 替换为右边图片的路径
+            right_image_path = "images/2025map_red.png"  # 替换为右边图片的路径
         else:
             self.save_path = 'arrays_test_blue.npy'
-            right_image_path = "images/map_blue.jpg"  # 替换为右边图片的路径
+            right_image_path = "images/2025map_blue.png"  # 替换为右边图片的路径
 
         # _,left_image = self.camera_capture.read()
         left_image = camera_image
         right_image = cv2.imread(right_image_path)
 
         # 记录缩放比例
-        self.left_scale_x = left_image.shape[1] / 1350.0
-        self.left_scale_y = left_image.shape[0] / 1000.0
+        self.left_scale_x = left_image.shape[1] / L_width
+        self.left_scale_y = left_image.shape[0] / L_height
 
-        self.right_scale_x = right_image.shape[1] / 550.0
-        self.right_scale_y = right_image.shape[0] / 900.0
+        self.right_scale_x = right_image.shape[1] / R_width
+        self.right_scale_y = right_image.shape[0] / R_height
+
         left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2RGB)
-        self.left_image = cv2.resize(left_image, (1350, 1000))
+        self.left_image = cv2.resize(left_image, (L_width, L_height))
         right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2RGB)
-        self.right_image = cv2.resize(right_image, (550, 900))
+        self.right_image = cv2.resize(right_image, (R_width, R_height))
         # 缩放图像
         self.update_images()
 
@@ -254,7 +263,6 @@ class MyUI(QWidget):
         left_pixmap = self.convert_cvimage_to_pixmap(self.left_image)
         self.left_top_label.setPixmap(left_pixmap)
 
-
         right_pixmap = self.convert_cvimage_to_pixmap(self.right_image)
         self.right_top_label.setPixmap(right_pixmap)
 
@@ -262,7 +270,7 @@ class MyUI(QWidget):
         if self.capturing:
             img0 = camera_image
             left_image = cv2.cvtColor(img0, cv2.COLOR_BGR2RGB)
-            self.left_image = cv2.resize(left_image, (1350, 1000))
+            self.left_image = cv2.resize(left_image, (L_width, L_height))
             self.update_images()
 
     def left_top_clicked(self, event):
@@ -357,13 +365,13 @@ class MyUI(QWidget):
 
 
 if __name__ == '__main__':
-    camera_mode = 'hik'  # 'test':测试模式,'hik':海康相机,'video':USB相机（videocapture）
+    camera_mode = 'test'  # 'test':测试模式,'hik':海康相机,'video':USB相机（videocapture）
     camera_image = None
-    state = 'B'  # R:红方/B:蓝方
+    state = 'b'  # R:红方/B:蓝方
 
     if camera_mode == 'test':
-        camera_image = cv2.imread('images/test_image.jpg')
-    elif camera_mode == 'hik':
+        camera_image = cv2.imread(r"E:\code\VScode\note\save_video\5-21-game1-1\raw\screen_20250521_085434.png")
+    elif camera_mode in ['hik', 'hik_test']:
         # 海康相机图像获取线程
         from hik_camera import call_back_get_image, start_grab_and_get_data_size, close_and_destroy_device, set_Value, \
             get_Value, image_control
