@@ -210,9 +210,9 @@ class Predict:
         if self.flag:
             guess_table[name] = self.predict_point(guess_table.get(name))
             self.flag = False
-            print(name, '进行预测')
-        else:
-            print(name, '已经预测')
+        #     print(name, '进行预测')
+        # else:
+        #     print(name, '已经预测')
 
 
 guess_predict = {
@@ -302,8 +302,8 @@ class Filter:
             else:
                 guess_list[name] = False
                 filtered_d[name] = self.filter_data(name)
-                if not guess_predict[name].flag:
-                    print(name, '重置')
+                # if not guess_predict[name].flag:
+                #     print(name, '重置')
                 guess_predict[name].flag = True
         # 返回所有当前识别到的机器人及其坐标的均值
         return filtered_d
@@ -654,9 +654,9 @@ def ser_send():
                     if all_filter_data.get('R7', False):
                         send_map['R7'] = send_point_R('R7', all_filter_data)
 
-            # ser_data = build_data_radar_all(send_map, state)
-            # packet, seq = build_send_packet(ser_data, seq, [0x03, 0x05])
-            # ser1.write(packet)
+            ser_data = build_data_radar_all(send_map, state)
+            packet, seq = build_send_packet(ser_data, seq, [0x03, 0x05])
+            ser1.write(packet)
 
             # ser_data = build_data_sentry(send_map, state)
             # packet, seq = build_send_packet(ser_data, seq, [0x03, 0x01])
