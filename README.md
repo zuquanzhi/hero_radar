@@ -60,7 +60,7 @@ d_factor = 0.01  # 欧式距离指数系数
 cos_factor = 0.003  # 余弦相似度系数
 ```
 
-使用 `RMUL_axis.py` 确定盲点坐标，战术部署，
+使用 `RMUL_axis.py` 确定盲点坐标，战术部署，绿色圈为 `准确`，黄色圈为 `半准确`
 
 <div align="center">
   <img src="images/RMUC_axis.png" width="1000em" alt="RMUC">
@@ -80,8 +80,39 @@ cos_factor = 0.003  # 余弦相似度系数
 排序后： [(900, 600), (900, 900), (1469, 687), (1335, 821), (200, 100)]
 ```
 
-坐标按优先级（欧式距离+余弦相似度）排序，
-优先级越高，排序越靠前，先遍历到的概率就越高，就越可能先锁定到机器人
+原理：设目标消失前最后两个位置坐标为 $P_{t-1}=(x_1,y_1)$ 和 $P_{t}=(x_2,y_2)$ ，则速度向量：
+
+$$
+\vec{v}=(v_x,v_y)=(x_2-x_1,y_2-y_1)
+$$
+
+该向量表征目标瞬时运动方向，模长反映运动速度
+
+对于候选固定点 $F_{i}=(f_x,f_y)$，构建预测向量：
+
+$$
+\vec{d_i}=(d_x,d_y)=(f_x-x_2,f_y-y_2)
+$$
+
+通过余弦相似度度量:
+
+$$
+Similarity = \cos \theta = \frac{\vec{v} \vec{d_i}}{\lVert \vec{v} \rVert \lVert \vec{d_i} \rVert}
+$$
+
+距离采用指数衰减
+
+$$
+D_{i}=e^{-\beta \lVert \vec{d_i} \rVert}
+$$
+
+综合评分为加权和：
+
+$$
+score=\alpha · Similarity + (1-\alpha) · D_{i}
+$$
+
+分数越高，优先级越高，排序越靠前，先遍历到的概率就越高，就越可能先锁定到机器人
 
 `d_factor`，`cos_factor` 参数值确定后就可以添加到 `main.py` 52行
 
