@@ -93,7 +93,7 @@ class YOLOv5Detector:
                     xywh = [round(x) for x in xywh]
                     xywh = [xywh[0] - xywh[2] // 2, xywh[1] - xywh[3] // 2, xywh[2], xywh[3]]
                     if self.ui:
-                        annotator = Annotator(np.ascontiguousarray(img), line_width=1, example=str(self.names))
+                        annotator = Annotator(np.ascontiguousarray(img), line_width=5, example=str(self.names))
                         # print(int(cls))
                         label = f'{self.names[int(cls)]} {conf:.2f}'
                         annotator.box_label(xyxy, label, color=self.colors[int(cls)])

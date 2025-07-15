@@ -1,4 +1,5 @@
-from sys import platform
+import sys
+import platform
 
 from export import export_onnx
 from utils.general import (LOGGER, check_requirements, check_version,
@@ -47,8 +48,18 @@ def export_engine( file, half, workspace=4, verbose=False, prefix=colorstr('Tens
     LOGGER.info(f'{prefix} building FP{16 if builder.platform_has_fast_fp16 and half else 32} engine as {f}')
     if builder.platform_has_fast_fp16 and half:
         config.set_flag(trt.BuilderFlag.FP16)
-    with builder.build_engine(network, config) as engine, open(f, 'wb') as t:
-        t.write(engine.serialize())
+    
+    # 使用新的API来构建引擎
+    try:
+        # 尝试使用新的API (TensorRT 8.5+)
+        serialized_engine = builder.build_serialized_network(network, config)
+        with open(f, 'wb') as t:
+            t.write(serialized_engine)
+    except AttributeError:
+        # 如果新API不可用，使用旧的API
+        with builder.build_engine(network, config) as engine, open(f, 'wb') as t:
+            t.write(engine.serialize())
+    
     return f, None
 
 
